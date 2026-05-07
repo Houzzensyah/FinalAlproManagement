@@ -5,4 +5,6 @@ func main() {
 
 	fmt.Println("Hello, World!")
 	fmt.Print("ojen")
+
+	ojen = wibu
 }
