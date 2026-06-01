@@ -15,25 +15,25 @@ type Movie struct {
 }
 
 // Find min/max function
-func findMinGenre(arr []Movie, start, n int) int {
-	minIdx := start
-	for i := start + 1; i < n; i++ {
-		if arr[i].Genre < arr[minIdx].Genre {
-			minIdx = i
-		}
-	}
-	return minIdx
+func findMin(arr []Movie, i, n int) int {
+    minIdx := i
+    for j := i + 1; j < n; j++ {
+        if arr[j].Genre < arr[minIdx].Genre {
+            minIdx = j
+        }
+    }
+    return minIdx
 }
 
 // func findMax(arr []int) int {
-func findMaxGenre(arr []Movie, start, n int) int {
-	maxIdx := start
-	for i := start + 1; i < n; i++ {
-		if arr[i].Genre > arr[maxIdx].Genre {
-			maxIdx = i
-		}
-	}
-	return maxIdx
+func findMax(arr []Movie, i, n int) int {
+    maxIdx := i
+    for j := i + 1; j < n; j++ {
+        if arr[j].Genre > arr[maxIdx].Genre {
+            maxIdx = j
+        }
+    }
+    return maxIdx
 }
 
 // // Base sorting functions
@@ -41,9 +41,9 @@ func selectionSortGenre(arr []Movie, n int, asc bool) {
 	for i := 0; i < n-1; i++ {
 		var targetIdx int
 		if asc {
-			targetIdx = findMinGenre(arr, i, n)
+			targetIdx = findMin(arr, i, n)
 		} else {
-			targetIdx = findMaxGenre(arr, i, n)
+			targetIdx = findMax(arr, i, n)
 		}
 		arr[i], arr[targetIdx] = arr[targetIdx], arr[i]
 	}
