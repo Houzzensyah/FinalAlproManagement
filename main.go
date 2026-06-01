@@ -15,75 +15,154 @@ type Movie struct {
 }
 
 // Find min/max function
-func findMin(arr []int) int {
-	min = arr[0]
-	for i = 1; i < len(arr); i++ {
-		if arr[i] < min {
-			min = arr[i]
-		}
-	}
-	return min
+// func findMin(arr []int) int {
+// 	min = arr[0]
+// 	for i = 1; i < len(arr); i++ {
+// 		if arr[i] < min {
+// 			min = arr[i]
+// 		}
+// 	}
+// 	return min
+// }
+
+// func findMax(arr []int) int {
+// 	max = arr[0]
+// 	for i = 1; i < len(arr); i++ {
+// 		if arr[i] > max {
+// 			max = arr[i]
+// 		}
+// 	}
+// 	return max
+// }
+
+// // Base sorting functions
+// func selectionSort(arr []int) {
+// 	n := len(arr)
+// 	for i = 0; i < n-1; i++ {
+// 		minIdx = i
+// 		for j = i + 1; j < n; j++ {
+// 			if arr[j] < arr[minIdx] {
+// 				minIdx = j
+// 			}
+// 		}
+// 		arr[i], arr[minIdx] = arr[minIdx], arr[i]
+// 	}
+// }
+
+// func insertionSort(arr []int) {
+// 	n = len(arr)
+// 	for i = 1; i < n; i++ {
+// 		key := arr[i]
+// 		j = i - 1
+// 		for j >= 0 && arr[j] > key {
+// 			arr[j+1] = arr[j]
+// 			j--
+// 		}
+// 		arr[j+1] = key
+// 	}
+// }
+
+
+
+
+
+
+
+// CRUD Function
+func showMovieDetails(movie Movie) {
+	fmt.Println()
+	fmt.Printf(" Title: %s\n", movie.Title)
+	fmt.Printf(" Year: %d\n", movie.Year)
+	fmt.Printf(" Description: %s\n", movie.Description)
+	fmt.Printf(" Rating: %.1f\n", movie.Rating)
+	fmt.Printf(" Genre: %s\n", movie.Genre)
 }
 
-func findMax(arr []int) int {
-	max = arr[0]
-	for i = 1; i < len(arr); i++ {
-		if arr[i] > max {
-			max = arr[i]
-		}
-	}
-	return max
-}
 
-// Base sorting functions
-func selectionSort(arr []int) {
-	n := len(arr)
-	for i = 0; i < n-1; i++ {
-		minIdx = i
-		for j = i + 1; j < n; j++ {
-			if arr[j] < arr[minIdx] {
-				minIdx = j
-			}
-		}
-		arr[i], arr[minIdx] = arr[minIdx], arr[i]
-	}
-}
-
-func insertionSort(arr []int) {
-	n = len(arr)
-	for i = 1; i < n; i++ {
-		key := arr[i]
-		j = i - 1
-		for j >= 0 && arr[j] > key {
-			arr[j+1] = arr[j]
-			j--
-		}
-		arr[j+1] = key
-	}
-}
-
-
-
-
-
-
-
-// Program functions
 func showAllMovies() {
-
+	var i int
+	i = 0
+	if totalMovies == 0 {
+		fmt.Println(" No movies in the collection.")
+	} else {
+		for i < totalMovies {
+			showMovieDetails(movieCollection[i])
+			i = i + 1
+		}
+	}
 }
 
 func addMovie() {
+	if totalMovies >= MAX_MOVIES {
+		fmt.Println(" Movie collection is full. Cannot add more movies.")
+	}else{
+		fmt.Print(" Enter movie title: ")	
+		fmt.Scan(&movieCollection[totalMovies].Title)
+		fmt.Print(" Enter release year: ")
+		fmt.Scan(&movieCollection[totalMovies].Year)
+		fmt.Print(" Enter description: ")
+		fmt.Scan(&movieCollection[totalMovies].Description)
+		fmt.Print(" Enter rating (0.0 - 10.0): ")
+		fmt.Scan(&movieCollection[totalMovies].Rating)
+		fmt.Print(" Enter genre: ")
+		fmt.Scan(&movieCollection[totalMovies].Genre)
+		totalMovies = totalMovies + 1
+		fmt.Println(" Movie added successfully!")
+	}
+
+
 
 }
-
 func editMovie() {
-
+	if totalMovies == 0 {
+		fmt.Printf(" No movies to edit.\n")
+	}else {
+		showAllMovies()
+		var index int
+		fmt.Print(" Enter the number of the movie to edit (1 - ", totalMovies, "): ")
+		fmt.Scan(&index)
+		if index < 1 || index > totalMovies {
+			fmt.Println(" Invalid movie number.")
+		} else {
+			index = index - 1 // Make -1 karena base index di golang di mulai dari 0
+			fmt.Print(" Enter new title (current: ", movieCollection[index].Title, "): ")
+			fmt.Scan(&movieCollection[index].Title)
+			fmt.Print(" Enter new release year (current: ", movieCollection[index].Year, "): ")
+			fmt.Scan(&movieCollection[index].Year)
+			fmt.Print(" Enter new description (current: ", movieCollection[index].Description, "): ")
+			fmt.Scan(&movieCollection[index].Description)
+			fmt.Print(" Enter new rating (current: ", movieCollection[index].Rating, "): ")
+			fmt.Scan(&movieCollection[index].Rating)
+			fmt.Print(" Enter new genre (current: ", movieCollection[index].Genre, "): ")
+			fmt.Scan(&movieCollection[index].Genre)
+			fmt.Println(" Movie updated successfully!")
+	}
+	}
 }
 
 func deleteMovie() {
-
+	if totalMovies == 0 {
+		fmt.Printf(" No movies to delete.\n")
+	}else {
+		showAllMovies()
+		var index int
+		fmt.Print(" Enter the number of the movie to delete (1 - ", totalMovies, "): ")
+		fmt.Scan(&index)
+		if index < 1 || index > totalMovies {
+			fmt.Println(" Invalid movie number.")
+		}else {	
+			i := index
+			for i < totalMovies-1{
+				movieCollection[i] = movieCollection[i+1]
+				i = i + 1
+			}
+			totalMovies = totalMovies - 1
+			fmt.Println(" Movie deleted successfully!")
+		}
+	}
 }
+
+// Program functions
 
 func searchMenu() {
 
