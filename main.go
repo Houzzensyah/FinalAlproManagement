@@ -14,7 +14,7 @@ type Movie struct {
 	Genre       string
 }
 
-// Find min/max function
+Find min/max function
 func findMin(arr []Movie, i, n int) int {
     minIdx := i
     for j := i + 1; j < n; j++ {
@@ -37,7 +37,7 @@ func findMax(arr []Movie, i, n int) int {
 }
 
 // // Base sorting functions
-func selectionSortGenre(arr []Movie, n int, asc bool) {
+func sSortGenre(arr []Movie, n int, asc bool) {
 	for i := 0; i < n-1; i++ {
 		var targetIdx int
 		if asc {
@@ -49,31 +49,25 @@ func selectionSortGenre(arr []Movie, n int, asc bool) {
 	}
 }
 
-func insertionSortJudul(arr []Movie, n int, asc bool) {
+
+func iSortTitle(arr []Movie, n int, asc bool) {
 	for i := 1; i < n; i++ {
 		key := arr[i]
 		j := i - 1
-		
-		for j >= 0 {
-			if asc {
-				if arr[j].Title > key.Title {
-					arr[j+1] = arr[j]
-					j--
-				} else {
-					break
-				}
-			} else {
-				if arr[j].Title < key.Title {
-					arr[j+1] = arr[j]
-					j--
-				} else {
-					break
-				}
-			}
+
+		for j >= 0 && asc && arr[j].Title > key.Title {
+			arr[j+1] = arr[j]
+			j--
+		}
+
+		for j >= 0 && !asc && arr[j].Title < key.Title {
+			arr[j+1] = arr[j]
+			j--
 		}
 		arr[j+1] = key
 	}
 }
+
 
 
 
@@ -118,9 +112,6 @@ func addMovie() {
 		totalMovies = totalMovies + 1
 		fmt.Println(" Movie added successfully!")
 	}
-
-
-
 }
 func editMovie() {
 	if totalMovies == 0 {
@@ -182,11 +173,41 @@ func statisticsMenu() {
 }
 
 func sortMenu() {
+	var sortBy int
+	fmt.Println("\n  Sort by:")
+	fmt.Println("  1. Genre")
+	fmt.Println("  2. Rating")
+	fmt.Print("  Choose: ")
+	fmt.Scan(&sortBy)
 
+	if sortBy < 1 || sortBy > 2 {
+		fmt.Println("  Invalid choice.")
+		return
+	}
+
+	var orderChoice int
+	fmt.Println("\n  Order:")
+	fmt.Println("  1. Ascending")
+	fmt.Println("  2. Descending")
+	fmt.Print("  Choose: ")
+	fmt.Scan(&orderChoice)
+
+	if orderChoice < 1 || orderChoice > 2 {
+		fmt.Println("  Invalid choice.")
+		return
+	}
+
+	asc := orderChoice == 1
+
+	if sortBy == 1 {
+		sSortGenre(movieCollection[:totalMovies], totalMovies, asc)
+	} else {
+		iSortRating(movieCollection[:totalMovies], totalMovies, asc)
+	}
+
+	fmt.Println("\n  Movies successfully sorted!")
+	showAllMovies()
 }			
-
-
-
 
 
 // Main function
