@@ -68,9 +68,6 @@ func iSortTitle(arr []Movie, n int, asc bool) {
 	}
 }
 
-
-
-
 // CRUD Function
 func showMovieDetails(movie Movie) {
 	fmt.Println()
@@ -163,9 +160,61 @@ func deleteMovie() {
 }
 
 // Program functions
-
 func searchMenu() {
+	var keyword string
+	fmt.Print("\n  Enter movie title to search: ")
+	fmt.Scan(&keyword)
 
+	var searchChoice int
+	fmt.Println("\n  Search method:")
+	fmt.Println("  1. Sequential Search")
+	fmt.Println("  2. Binary Search (data will be sorted by title first)")
+	fmt.Print("  Choose: ")
+	fmt.Scan(&searchChoice)
+
+	if searchChoice == 1 {
+		sSearch(keyword)
+	} else if searchChoice == 2 {
+		iSortTitle(movieCollection[:totalMovies], totalMovies, true)
+		bSearch(keyword)
+	} else {
+		fmt.Println("  Invalid choice.")
+	}
+}
+
+func sSearch(keyword string) {
+	found := false
+	for i := 0; i < totalMovies; i++ {
+		if movieCollection[i].Title == keyword {
+			showMovieDetails(movieCollection[i])
+			found = true
+		}
+	}
+	if !found {
+		fmt.Println("  Movie not found.")
+	}
+}
+
+func bSearch(keyword string) {
+	low := 0
+	high := totalMovies - 1
+	found := false
+
+	for low <= high && !found {
+		mid := (low + high) / 2
+		if movieCollection[mid].Title == keyword {
+			showMovieDetails(movieCollection[mid])
+			found = true
+		} else if movieCollection[mid].Title < keyword {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+
+	if !found {
+		fmt.Println("  Movie not found.")
+	}
 }
 
 func statisticsMenu() {
