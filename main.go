@@ -14,58 +14,57 @@ type Movie struct {
 	Genre       string
 }
 
-Find min/max function
+//Find min/max function
 func findMin(arr []Movie, i, n int) int {
     minIdx := i
-    for j := i + 1; j < n; j++ {
+    j := i + 1
+    for j < n {
         if arr[j].Genre < arr[minIdx].Genre {
             minIdx = j
         }
+        j = j + 1
     }
     return minIdx
 }
 
-// func findMax(arr []int) int {
 func findMax(arr []Movie, i, n int) int {
     maxIdx := i
-    for j := i + 1; j < n; j++ {
+    j := i + 1
+    for j < n {
         if arr[j].Genre > arr[maxIdx].Genre {
             maxIdx = j
         }
+        j = j + 1
     }
     return maxIdx
 }
 
-// // Base sorting functions
+
+//Sorting functions
 func sSortGenre(arr []Movie, n int, asc bool) {
-	for i := 0; i < n-1; i++ {
-		var targetIdx int
-		if asc {
-			targetIdx = findMin(arr, i, n)
-		} else {
-			targetIdx = findMax(arr, i, n)
-		}
-		arr[i], arr[targetIdx] = arr[targetIdx], arr[i]
-	}
+    for i := 0; i < n-1; i++ {
+        var targetIdx int
+        if asc {
+            targetIdx = findMin(arr, i, n)
+        } else {
+            targetIdx = findMax(arr, i, n)
+        }
+        temp := arr[i]
+        arr[i] = arr[targetIdx]
+        arr[targetIdx] = temp
+    }
 }
 
-
 func iSortTitle(arr []Movie, n int, asc bool) {
-	for i := 1; i < n; i++ {
-		key := arr[i]
-		j := i - 1
-
-		for j >= 0 && asc && arr[j].Title > key.Title {
-			arr[j+1] = arr[j]
-			j--
-		}
-
-		for j >= 0 && !asc && arr[j].Title < key.Title {
-			arr[j+1] = arr[j]
-			j--
-		}
-		arr[j+1] = key
-	}
+    for i := 1; i < n; i++ {
+        key := arr[i]
+        j := i - 1
+        for j >= 0 && (asc && arr[j].Title > key.Title || !asc && arr[j].Title < key.Title) {
+            arr[j+1] = arr[j]
+            j = j - 1
+        }
+        arr[j+1] = key
+    }
 }
 
 // CRUD Function
@@ -159,62 +158,69 @@ func deleteMovie() {
 	}
 }
 
-// Program functions
+//search function
 func searchMenu() {
-	var keyword string
-	fmt.Print("\n  Enter movie title to search: ")
-	fmt.Scan(&keyword)
+   var searchChoice int
+    for searchChoice != 3 {
+        fmt.Println("Search by:")
+        fmt.Println("  1. Title (Binary Search)")
+        fmt.Println("  2. Genre (Sequential Search)")
+        fmt.Println("  3. Back")
+        fmt.Print("  Choose: ")
+        fmt.Scan(&searchChoice)
 
-	var searchChoice int
-	fmt.Println("\n  Search method:")
-	fmt.Println("  1. Sequential Search")
-	fmt.Println("  2. Binary Search (data will be sorted by title first)")
-	fmt.Print("  Choose: ")
-	fmt.Scan(&searchChoice)
-
-	if searchChoice == 1 {
-		sSearch(keyword)
-	} else if searchChoice == 2 {
-		iSortTitle(movieCollection[:totalMovies], totalMovies, true)
-		bSearch(keyword)
-	} else {
-		fmt.Println("  Invalid choice.")
-	}
+        if searchChoice == 1 {
+            var keyword string
+            fmt.Print("Enter movie title to search: ")
+            fmt.Scan(&keyword)
+            iSortTitle(movieCollection[:totalMovies], totalMovies, true)
+            bSearch(keyword)
+        } else if searchChoice == 2 {
+            var keyword string
+            fmt.Print("Enter genre to search: ")
+            fmt.Scan(&keyword)
+            sSearch(keyword)
+        } else {
+            fmt.Println("  Invalid choice.")
+        }
+    }
 }
 
 func sSearch(keyword string) {
-	found := false
-	for i := 0; i < totalMovies; i++ {
-		if movieCollection[i].Title == keyword {
-			showMovieDetails(movieCollection[i])
-			found = true
-		}
-	}
-	if !found {
-		fmt.Println("  Movie not found.")
-	}
+    found := -1
+    i := 0
+    for i < totalMovies {
+        if movieCollection[i].Genre == keyword {
+            showMovieDetails(movieCollection[i])
+            found = i
+        }
+        i = i + 1
+    }
+    if found == -1 {
+        fmt.Println("Movie not found.")
+    }
 }
 
 func bSearch(keyword string) {
-	low := 0
-	high := totalMovies - 1
-	found := false
+    low := 0
+    high := totalMovies - 1
+    found := -1
 
-	for low <= high && !found {
-		mid := (low + high) / 2
-		if movieCollection[mid].Title == keyword {
-			showMovieDetails(movieCollection[mid])
-			found = true
-		} else if movieCollection[mid].Title < keyword {
-			low = mid + 1
-		} else {
-			high = mid - 1
-		}
-	}
-
-	if !found {
-		fmt.Println("  Movie not found.")
-	}
+    for low <= high && found == -1 {
+        mid := (low + high) / 2
+		
+        if movieCollection[mid].Title == keyword {
+            showMovieDetails(movieCollection[mid])
+            found = mid
+        } else if movieCollection[mid].Title < keyword {
+            low = mid + 1
+        } else {
+            high = mid - 1
+        }
+    }
+    if found == -1 {
+        fmt.Println("Movie not found.")
+    }
 }
 
 func statisticsMenu() {
@@ -222,40 +228,7 @@ func statisticsMenu() {
 }
 
 func sortMenu() {
-	var sortBy int
-	fmt.Println("\n  Sort by:")
-	fmt.Println("  1. Genre")
-	fmt.Println("  2. Rating")
-	fmt.Print("  Choose: ")
-	fmt.Scan(&sortBy)
 
-	if sortBy < 1 || sortBy > 2 {
-		fmt.Println("  Invalid choice.")
-		return
-	}
-
-	var orderChoice int
-	fmt.Println("\n  Order:")
-	fmt.Println("  1. Ascending")
-	fmt.Println("  2. Descending")
-	fmt.Print("  Choose: ")
-	fmt.Scan(&orderChoice)
-
-	if orderChoice < 1 || orderChoice > 2 {
-		fmt.Println("  Invalid choice.")
-		return
-	}
-
-	asc := orderChoice == 1
-
-	if sortBy == 1 {
-		sSortGenre(movieCollection[:totalMovies], totalMovies, asc)
-	} else {
-		iSortRating(movieCollection[:totalMovies], totalMovies, asc)
-	}
-
-	fmt.Println("\n  Movies successfully sorted!")
-	showAllMovies()
 }			
 
 
