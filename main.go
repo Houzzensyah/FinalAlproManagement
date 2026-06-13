@@ -41,7 +41,7 @@ func findMax(arr []Movie, i, n int) int {
 
 
 //Sorting functions
-func sSortGenre(arr []Movie, n int, asc bool) {
+func sSortRating(arr []Movie, n int, asc bool) {
     for i := 0; i < n-1; i++ {
         var targetIdx int
         if asc {
@@ -55,11 +55,11 @@ func sSortGenre(arr []Movie, n int, asc bool) {
     }
 }
 
-func iSortTitle(arr []Movie, n int, asc bool) {
+func iSortYear(arr []Movie, n int, asc bool) {
     for i := 1; i < n; i++ {
         key := arr[i]
         j := i - 1
-        for j >= 0 && (asc && arr[j].Title > key.Title || !asc && arr[j].Title < key.Title) {
+        for j >= 0 && (asc && arr[j].Year > key.Year || !asc && arr[j].Year < key.Year) {
             arr[j+1] = arr[j]
             j = j - 1
         }
@@ -70,11 +70,14 @@ func iSortTitle(arr []Movie, n int, asc bool) {
 // CRUD Function
 func showMovieDetails(movie Movie) {
 	fmt.Println()
+	fmt.Println("==========================================")
 	fmt.Printf(" Title: %s\n", movie.Title)
 	fmt.Printf(" Year: %d\n", movie.Year)
 	fmt.Printf(" Description: %s\n", movie.Description)
 	fmt.Printf(" Rating: %.1f\n", movie.Rating)
 	fmt.Printf(" Genre: %s\n", movie.Genre)
+	fmt.Println("==========================================")
+	fmt.Println()
 }
 
 
@@ -162,26 +165,26 @@ func deleteMovie() {
 func searchMenu() {
    var searchChoice int
     for searchChoice != 3 {
-        fmt.Println("Search by:")
-        fmt.Println("  1. Title (Binary Search)")
-        fmt.Println("  2. Genre (Sequential Search)")
-        fmt.Println("  3. Back")
-        fmt.Print("  Choose: ")
+        fmt.Println(" Search by:")
+        fmt.Println(" 1. Title ")
+        fmt.Println(" 2. Genre ")
+        fmt.Println(" 3. Back")
+        fmt.Print(" Choose: ")
         fmt.Scan(&searchChoice)
 
         if searchChoice == 1 {
             var keyword string
-            fmt.Print("Enter movie title to search: ")
+            fmt.Print(" Enter movie title to search: ")
             fmt.Scan(&keyword)
-            iSortTitle(movieCollection[:totalMovies], totalMovies, true)
+            sSortRating(movieCollection[:totalMovies], totalMovies, true)
             bSearch(keyword)
         } else if searchChoice == 2 {
             var keyword string
-            fmt.Print("Enter genre to search: ")
+            fmt.Print(" Enter genre to search: ")
             fmt.Scan(&keyword)
             sSearch(keyword)
         } else {
-            fmt.Println("  Invalid choice.")
+            fmt.Println(" Invalid choice.")
         }
     }
 }
@@ -197,7 +200,7 @@ func sSearch(keyword string) {
         i = i + 1
     }
     if found == -1 {
-        fmt.Println("Movie not found.")
+        fmt.Println(" Movie not found.")
     }
 }
 
@@ -211,6 +214,7 @@ func bSearch(keyword string) {
 		
         if movieCollection[mid].Title == keyword {
             showMovieDetails(movieCollection[mid])
+			
             found = mid
         } else if movieCollection[mid].Title < keyword {
             low = mid + 1
@@ -219,15 +223,81 @@ func bSearch(keyword string) {
         }
     }
     if found == -1 {
-        fmt.Println("Movie not found.")
+        fmt.Println(" Movie not found.")
     }
 }
 
 func statisticsMenu() {
+	if totalMovies == 0 {
+		fmt.Println("\n No movies in the collection.")
+	} else {
+		var genres [MAX_MOVIES]string
+		var counts [MAX_MOVIES]int
+		totalGenres := 0
+		totalRating := 0.0
+
+		i := 0
+		
+		for i < totalMovies {
+			totalRating = totalRating + movieCollection[i].Rating
+
+			j := 0
+			for j < totalGenres && genres[j] != movieCollection[i].Genre {
+				j = j + 1
+			}
+			if j == totalGenres {
+				genres[j] = movieCollection[i].Genre
+				totalGenres = totalGenres + 1
+			}
+			counts[j] = counts[j] + 1
+
+			i = i + 1
+		}
+
+		fmt.Println(" CineReview Statistics")
+		fmt.Printf(" Total movies   : %d\n", totalMovies)
+		fmt.Printf(" Average rating : %.2f / 10.0\n", totalRating/float64(totalMovies))
+		fmt.Println("\n Movies per Genre:")
+		g := 0
+		for g < totalGenres {
+			fmt.Printf(" %-15s : %d film\n", genres[g], counts[g])
+			g = g + 1
+		}
+		fmt.Println("==========================================")
+	}
+
 
 }
 
 func sortMenu() {
+	var sortChoice int
+	fmt.Println("\n Sort by:")
+	fmt.Println(" 1. Rating ")
+	fmt.Println(" 2. Year  ")
+	fmt.Println(" 0. Back")
+	fmt.Print(" Choose: ")
+	fmt.Scan(&sortChoice)
+
+	if sortChoice == 1 || sortChoice == 2 {
+		var orderChoice int
+		fmt.Println("\n  Order:")
+		fmt.Println(" 1. Ascending")
+		fmt.Println(" 2. Descending")
+		fmt.Print(" Choose: ")
+		fmt.Scan(&orderChoice)
+
+		asc := orderChoice == 1
+
+		if sortChoice == 1 {
+			sSortRating(movieCollection[:totalMovies], totalMovies, asc)
+			fmt.Println("\n Movies sorted by Rating.")
+		} else {
+			iSortYear(movieCollection[:totalMovies], totalMovies, asc)
+			fmt.Println("\n Movies sorted by Year.")
+		}
+
+		showAllMovies()
+	}
 
 }			
 
@@ -241,29 +311,30 @@ func main() {
 	fmt.Println("==========================================")
 
 	choice := -1
+
 	for choice != 0 {
 		fmt.Println("\n==========================================")
 		fmt.Printf("  Current collection: %d movies\n", totalMovies)
 		fmt.Println("==========================================")
-		fmt.Println("  1. View all movies")
-		fmt.Println("  2. Add movie")
-		fmt.Println("  3. Edit movie")
-		fmt.Println("  4. Delete movie")
-		fmt.Println("  5. Search movie")
-		fmt.Println("  6. Collection statistics")
-		fmt.Println("  0. Exit")
+		fmt.Println(" 1. View all movies")
+		fmt.Println(" 2. Add movie")
+		fmt.Println(" 3. Edit movie")
+		fmt.Println(" 4. Delete movie")
+		fmt.Println(" 5. Search movie")
+		fmt.Println(" 6. Collection statistics")
+		fmt.Println(" 0. Exit")
 		fmt.Println("==========================================")
-		fmt.Print("  Choice: ")
+		fmt.Print(" Choice: ")
 		fmt.Scan(&choice)
 
 		if choice == 1 {
 			showAllMovies()
 			if totalMovies > 0 {
 				var sortChoice int
-				fmt.Println("\n  Do you want to sort?")
-				fmt.Println("  1. Yes")
-				fmt.Println("  2. No")
-				fmt.Print("  Choose: ")
+				fmt.Println("\n Do you want to sort?")
+				fmt.Println(" 1. Yes")
+				fmt.Println(" 2. No")
+				fmt.Print(" Choose: ")
 				fmt.Scan(&sortChoice)
 				if sortChoice == 1 {
 					sortMenu()
@@ -280,11 +351,11 @@ func main() {
 		} else if choice == 6 {
 			statisticsMenu()
 		} else if choice != 0 {
-			fmt.Println("  Invalid choice, please try again.")
+			fmt.Println(" Invalid choice, please try again.")
 		}
 	}
 
-	fmt.Println("\n  Thank you for using CineReview.")
+	fmt.Println("\n Thank you for using CineReview.")
 }
 
 
