@@ -14,12 +14,15 @@ type Movie struct {
 	Genre       string
 }
 
-//Find min/max function
-func findMin(arr []Movie, i, n int) int {
+
+
+
+//Find min/max by Rating (float64)
+func findMinRating(arr []Movie, i, n int) int {
     minIdx := i
     j := i + 1
     for j < n {
-        if arr[j].Genre < arr[minIdx].Genre {
+        if arr[j].Rating < arr[minIdx].Rating {
             minIdx = j
         }
         j = j + 1
@@ -27,11 +30,36 @@ func findMin(arr []Movie, i, n int) int {
     return minIdx
 }
 
-func findMax(arr []Movie, i, n int) int {
+func findMaxRating(arr []Movie, i, n int) int {
     maxIdx := i
     j := i + 1
     for j < n {
-        if arr[j].Genre > arr[maxIdx].Genre {
+        if arr[j].Rating > arr[maxIdx].Rating {
+            maxIdx = j
+        }
+        j = j + 1
+    }
+    return maxIdx
+}
+
+//Find min/max by Title (string) — used before binary search
+func findMinTitle(arr []Movie, i, n int) int {
+    minIdx := i
+    j := i + 1
+    for j < n {
+        if arr[j].Title < arr[minIdx].Title {
+            minIdx = j
+        }
+        j = j + 1
+    }
+    return minIdx
+}
+
+func findMaxTitle(arr []Movie, i, n int) int {
+    maxIdx := i
+    j := i + 1
+    for j < n {
+        if arr[j].Title > arr[maxIdx].Title {
             maxIdx = j
         }
         j = j + 1
@@ -40,18 +68,30 @@ func findMax(arr []Movie, i, n int) int {
 }
 
 
-//Sorting functions
+//=========== Sorting functions ==============
+
+// Selection sort by Rating
 func sSortRating(arr []Movie, n int, asc bool) {
     for i := 0; i < n-1; i++ {
         var targetIdx int
         if asc {
-            targetIdx = findMin(arr, i, n)
+            targetIdx = findMinRating(arr, i, n)
         } else {
-            targetIdx = findMax(arr, i, n)
+            targetIdx = findMaxRating(arr, i, n)
         }
         temp := arr[i]
         arr[i] = arr[targetIdx]
         arr[targetIdx] = temp
+    }
+}
+
+// Selection sort by Title
+func sSortTitle(arr []Movie, n int) {
+    for i := 0; i < n-1; i++ {
+        minIdx := findMinTitle(arr, i, n)
+        temp := arr[i]
+        arr[i] = arr[minIdx]
+        arr[minIdx] = temp
     }
 }
 
@@ -176,7 +216,7 @@ func searchMenu() {
             var keyword string
             fmt.Print(" Enter movie title to search: ")
             fmt.Scan(&keyword)
-            sSortRating(movieCollection[:totalMovies], totalMovies, true)
+            sSortTitle(movieCollection[:totalMovies], totalMovies)
             bSearch(keyword)
         } else if searchChoice == 2 {
             var keyword string
@@ -214,7 +254,6 @@ func bSearch(keyword string) {
 		
         if movieCollection[mid].Title == keyword {
             showMovieDetails(movieCollection[mid])
-			
             found = mid
         } else if movieCollection[mid].Title < keyword {
             low = mid + 1
